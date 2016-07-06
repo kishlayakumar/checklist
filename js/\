@@ -1,0 +1,129 @@
+
+function myFunction(operation) {
+
+  //Various Things in this function
+  //This get User link from textbox
+  // and extract username
+  //and repo and send a get request.
+  var json = null;
+  if (operation == 'add'){
+  var textbox = document.getElementById("usernametext1");
+  var username = textbox.value;
+  urlink="/addUser/" + username;
+  } else if (operation == 'delete') {
+  var textbox = document.getElementById("usernametext2");
+  var username = textbox.value;
+  urlink="/deleteUser/" + username
+  } else if (operation == 'deactivateMfa'){
+  var textbox = document.getElementById("usernametext3");
+  var username = textbox.value;
+  urlink="/deactivateMfa/" + username
+  }
+  console.log(urlink)
+  $('#loading-img').show();
+  $.ajax({
+         global: false,
+         url : urlink,
+         type :  "GET",
+         cache: false,
+
+         success : function(html){
+
+             json = html;
+
+             $('#loading-img').hide(); // hide the loading message
+             $('#box-element').hide();//hide text box screen\
+             $('#box-element2').hide()
+             $('#box-element3').hide()
+             $('#box-element4').hide()
+             $('#box-element5').append(json)
+             $ ('#box-element5').append('<br>')
+             $ ('#box-element5').append('<input id="button-click" class="next-click btn-block" onclick="return reload()" type="submit" value="NEXT OPERATION" autofocus>');
+             $('#box-element5').show();
+         },
+         error: function (jqXHR, exception) {
+             //For error and exception handling
+             var msg = '';
+             if (jqXHR.status === 0) {
+                 msg = 'Not connect.\n Verify Network.';
+             } else if (jqXHR.status == 404) {
+                 msg = 'Requested page not found. [404]';
+             } else if (jqXHR.status == 500) {
+                 msg = 'Internal Server Error [500]. Please report to kishlaya.k';
+             } else if (exception === 'parsererror') {
+                 msg = 'Requested JSON parse failed.';
+             } else if (exception === 'timeout') {
+                 msg = 'Time out error.';
+             } else if (exception === 'abort') {
+                 msg = 'Ajax request aborted.';
+             } else {
+                 msg = 'Uncaught Error.\n' + jqXHR.responseText;
+             }
+             $('#loading-img').hide(); // hide the loading message
+             $('#box-element').hide();//hide text box screen\
+             $('#box-element2').hide()
+             $('#box-element3').hide()
+             $('#box-element4').hide()
+
+             $ ('#box-element5').append(msg)
+             $ ('#box-element5').append('<br>')
+             $ ('#box-element5').append('<input id="button-click" class="next-click btn-block" onclick="return reload()" type="button" value="TRY AGAIN"i autofocus>');
+             $('#loading-img').hide();
+             $('#box-element').hide();
+             $('#box-element5').show();
+         }
+
+     });
+}
+
+
+function myFunction1(boxNo) {
+  // on click this function reload the given URL
+  //window.location.href = document.URL;
+  $("#box-element").fadeOut("slow");
+  $("#box-element").hide()
+  $("#box-element" + boxNo).fadeIn("slow");
+  $("#box-element" + boxNo).show()
+}
+$(window).load(function() {
+  // Animate loader off screen
+  $(".se-pre-con").fadeOut("slow");
+});
+
+
+function reload() {
+window.location.reload();
+}
+function onlyAlphabets(value) {
+  var regex = /^[a-zA-Z]*$/;
+  if (regex.test(value)) {
+      document.getElementById("notification").innerHTML = "Numbers Only";
+      return false;
+  } else {
+    return true;
+  }
+}
+
+
+
+
+$(document).ready(function(){
+    $('#usernametext1').keypress(function(e){
+      console(e);     
+      if(e.charCode=='13'){
+      $("input[value='Add user']").click();
+      }
+    });
+});
+$(document).ready(function(){
+    $('#usernametext2').keypress(function(e){
+      if(e.keyCode==13)
+      $("input[value='Delete']").click();
+    });
+});
+$(document).ready(function(){
+    $('#usernametext3').keypress(function(e){
+      if(e.keyCode==13)
+      $("input[value='Deactivate']").click();
+    });
+});
